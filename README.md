@@ -1,4 +1,4 @@
-# Video-On-Demand (VOD) Processing Service
+# Video Management - Video-On-Demand (VOD) Processing Service
 
 ## Introduction
 Brief description of the purpose and functionality of the VOD Processing Service. Include its real-world application and relevance.
