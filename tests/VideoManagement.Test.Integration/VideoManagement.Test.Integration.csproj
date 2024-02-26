@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.2" />
+    <PackageReference Include="Respawn" Version="6.2.1" />
+    <PackageReference Include="Testcontainers" Version="3.7.0" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="3.7.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="FakeKey.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

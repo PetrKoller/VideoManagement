@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.1" />
+    <PackageReference Include="WireMock.Net" Version="1.5.47" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TestingApp\TestingApp.csproj" />
+  </ItemGroup>
+
+</Project>

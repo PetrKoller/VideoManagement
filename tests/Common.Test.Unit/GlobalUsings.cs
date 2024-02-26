@@ -1,0 +1,15 @@
+﻿global using Common.Auth;
+global using Common.Auth.TestHelpers;
+global using Common.Auth.TokenServices;
+global using FluentAssertions;
+global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.Extensions.Caching.Memory;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
+global using NSubstitute;
+global using System.Security.Claims;
+global using System.Text;
+global using System.Text.Encodings.Web;
+global using System.Text.Json;
+global using Xunit;
