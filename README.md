@@ -1,10 +1,10 @@
 # Video Management - Video-On-Demand (VOD) Processing Service
 ## Introduction
 This repository serves as a reference project to demonstrate gained knowledge and skills.
-It's a picked service (and specifically adjsuted for reference project purposes) from a private system/platform called `PowerTrainer` that I develop in my free time. 
+It's a picked service (and specifically adjusted for reference project purposes) from a private system/platform called `PowerTrainer` that I develop in my free time. 
 
-Purpose of this service is to fulfill requirements that the system has to manage its own video content, following requiremetns are:
-- Video conent has to be private and exclusive for the platform (not accessible by outside  world), public platform like YouTube cannot be used
+Purpose of this service is to fulfill requirements that the system has to manage its own video content, following requirements are:
+- Video content has to be private and exclusive for the platform (not accessible by outside  world), public platform like YouTube cannot be used
 - Video content uploading and encoding for VOD formats
 - Video on demand streaming (videos playable anytime)
 - Video downloading
@@ -36,34 +36,24 @@ The service additionally plays a key role in controlling access to the video con
 - **Outbox pattern** - Outbox implementation for storing domain events in database that are later on published and handled by mediator notifications handler. So database changes and message publishing/side-effects are in one transaction.
 - **Quartz.NET** - scheduler used for outbox implementation
 
-## Architecture Overview
-High-level architecture description of the project. Optionally, include an architectural diagram.
+## Use Cases
+### Use Case 1: Video upload and encoding for VOD formats
+<img src="./docs/Video_upload_sequence_diagram_EN.svg" alt="Video upload sequence diagram">
 
-## Business Use Cases
+Client initiates the resource creation with the related video file. Given service that needs the video content creates a request to video management service that creates presigned URL where the video file should be uploaded.
+This URL is returned to the client that uploads the given video file. Upon successful upload to S3, it triggers an event that is captured by Video management service. This event is then processed by the service to start the video encoding process. Once the video is successfully encoded, the service publishes an integration event that is captured by the client service. This event contains the necessary information for the client service to retrieve the encoded video content.
 
-In this section, you can elaborate on various business scenarios and use cases that your VOD Processing Service addresses. For each use case, describe the problem, how your service provides a solution, and the benefits it offers.
+### Use Case 2: Playing a video on demand
+<img src="./docs/Video_playing_sequence_diagram_EN.svg" alt="Video playing on demand sequence diagram">
 
-### Use Case 1: Video upload
-- **Description**: Briefly describe the business scenario.
-- **Solution**: Explain how your service addresses this scenario.
-- **Benefits**: Highlight the advantages or improvements your service offers, such as increased efficiency, cost savings, improved user experience, etc.
+If FE Client needs to play a video, it requests the owner service of the video to get the video URL. The owner service requests the video management service to get all signed resources to construct short lived signed credential cookie that the fe client will ues for the video access. The video management service then returns the signed resources for the video content, which is then returned to the owning service. This service constructs the signed credential cookie and returns it to the FE client alongside with the CloudFront URL. The FE client then uses this cookie and link to access the video content via CloudFront.
 
-### Use Case 2: Video encoding for VOD formats
-- [Repeat the format above]
+### Use Case 3: Video download
+<img src="./docs/Video_download_sequence_diagram_EN.svg" alt="Video download sequence diagram">
 
-### Use Case 3: Playing a video on demand
-- [Repeat the format above]
-
-### Use Case 4: Video download
-- [Repeat the format above]
-...
-
-Feel free to add as many use cases as are relevant to demonstrate the versatility and applicability of your service in various business contexts.
+If FE Client needs to download a video, it requests the owner service of the video to get the video URL. The owner service requests the video management service to get short lived signed url for the video file. If the owner service is authorized to download a video, video management returns the signed CloudFront URL. The FE client then uses this link to download the video content. 
 
 ## Project Structure
-
-This section provides an overview of the key components of the project, detailing the organization and purpose of different directories and files. This helps in navigating and understanding the project's codebase more efficiently.
-...
 ```
 ├───Common  (Reusable functionalities, can be exported as nuget)
 │   ├───Abstractions
@@ -88,11 +78,11 @@ This section provides an overview of the key components of the project, detailin
 │   │       ├───Encode (Video encoding related features)
 │   │       │   ├───EncodingCompleted
 │   │       │   ├───EncodingFailed
-│   │       │   └───MediaConvertEvents
-│   │       ├───Entity
-│   │       ├───Repository
-│   │       ├───Stream
-│   │       └───Upload
+│   │       │   └───MediaConvertEvents (Events from AWS Media Convert)
+│   │       ├───Entity (Video related entities)
+│   │       ├───Repository (Video related repositories)
+│   │       ├───Stream (Video streaming related features)
+│   │       └───Upload (Video upload related features)
 │   ├───Migrations (EF Core migrations)
 │   ├───Options (Option pattern used for configuration)
 │   ├───Outbox (Outbox pattern job implementation)
@@ -102,6 +92,56 @@ This section provides an overview of the key components of the project, detailin
     │   └───V1
     └───IntegrationEvents (Integration events published by video management)
 ```
-
-Remember to customize the directory and file names based on your actual project structure. The goal here is to provide a clear map of your project for easier navigation and understanding.
 ## Configuration
+
+```json
+{
+"Database": { 
+    "ConnectionString": "<PLACEHOLDER>" // Connection string to the database, where information about videos and their status is stored
+  },
+  "AWS": {
+    "Profile": "<PLACEHOLDER>", // AWS profile name
+    "Region": "<PLACEHOLDER>" // AWS region
+  },
+  "BlobStorage": {
+    "BucketName": "<PLACEHOLDER>" // S3 bucket name, where videos are uploaded and stored
+  },
+  "Sqs": {
+    "VideoUploadedQueue": "<PLACEHOLDER>", // SQS queue name, where video uploaded events are published
+    "EncodingFailedQueue": "<PLACEHOLDER>", // SQS queue name, where video encoding failed events are published
+    "EncodingCompletedQueue": "<PLACEHOLDER>", // SQS queue name, where video encoding completed events are published
+    "WaitTimeSeconds": 15 // Wait time for SQS polling
+  },
+  "MediaService": {
+    "MediaConvertRole": "<PLACEHOLDER>", // IAM role for MediaConvert
+    "MediaConvertEndpoint": "<PLACEHOLDER>" // MediaConvert endpoint for creating encoding jobs
+  },
+  "CloudFront": {
+    "Url": "<PLACEHOLDER>", // CloudFront URL for accessing video
+    "PublicKeyId": "<PLACEHOLDER>", // CloudFront public key id for signing cookies
+    "PrivateKeyLocation": "<PLACEHOLDER>", // Path to private key for signing cookies
+    "LinkLifetimeInMinutes": 5 // Lifetime of signed cookies or URLs
+  },
+  "Outbox": {
+    "IntervalInSeconds": 10, // Polling interval for outbox job
+    "BatchSize": 10 // Number of outbox events to process in one batch
+  },
+  "MessageBroker": { // RabbitMQ configuration, where integration events are published
+    "Host": "<PLACEHOLDER>",
+    "Username": "<PLACEHOLDER>",
+    "Password": "<PLACEHOLDER>"
+  },
+  "JwtSettings": { // JWT settings for authentication and authorization via Keycloak
+    "ClientId": "<PLACEHOLDER>",
+    "ClientSecret": "<PLACEHOLDER>",
+    "AuthServer": "<PLACEHOLDER>",
+    "Realm": "<PLACEHOLDER>",
+    "Audiences": [
+      "<PLACEHOLDER>"
+    ],
+    "ValidateAudience": true,
+    "ClockSkewInSeconds": 5,
+    "AuthenticationScheme": "Bearer"
+  }
+}
+```
