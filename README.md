@@ -20,11 +20,20 @@ The service processes these AWS events to trigger appropriate workflows. Additio
 The service additionally plays a key role in controlling access to the video content. It ensures that only authorized services have the capability to interact with the video content. This is crucial for maintaining the security and privacy of the content. To achieve this, the service utilizes CloudFront signed URLs and cookies, as detailed in the AWS documentation ([CloudFront signed URLs and cookies](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html)). This method ensures that access to the video content is not only restricted to permitted entities but also securely managed, maintaining the integrity and confidentiality of the video data.
 
 ## Technologies Used
-List all the technologies, frameworks, and tools used in this project. For example:
-- AWS Services (S3, Elemental MediaConvert, EventBridge, SQS, CloudFront)
-- RabbitMQ
-- MassTransit
-- [Other technologies]
+- **.NET 8/C# 12**
+- **ASP.NET Core**
+- **EF Core 8** - ORM
+- **[Mediator](https://github.com/martinothamar/Mediator)** - Implements Mediator pattern
+- **Docker** - Running services in containers
+- **Testcontainers** - Used for running real database instance as docker container in integration tests
+- AWS Services
+    - **Amazon S3** - Storage for uploading videos to be encoded + storing and serving encoded content via CLoudFront
+    - **MediaConvert** - Tool for encoding videos to VOD format
+    - **EventBridge and Amazon SQS** - S3 and MediaConvert crete events that are published to SQS for processing by this service 
+    - **CloudFront** - CDN used for distributing the video content globally, secured and private
+- **RabbitMQ** - Message broker used for event driven design, async communication between services
+- **MassTransit** - Abstraction over message broker (RMQ) providing features and integrations that are beneficial for building scalable and maintainable distributed systems 
+- **Outbox pattern** - Outbox implementation for storing domain events in database that are later on published and handled by mediator notifications handler. So database changes and message publishing/side-effects are in one transaction.
 
 ## Architecture Overview
 High-level architecture description of the project. Optionally, include an architectural diagram.
