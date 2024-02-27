@@ -34,6 +34,7 @@ The service additionally plays a key role in controlling access to the video con
 - **RabbitMQ** - Message broker used for event driven design, async communication between services
 - **MassTransit** - Abstraction over message broker (RMQ) providing features and integrations that are beneficial for building scalable and maintainable distributed systems 
 - **Outbox pattern** - Outbox implementation for storing domain events in database that are later on published and handled by mediator notifications handler. So database changes and message publishing/side-effects are in one transaction.
+- **Quartz.NET** - scheduler used for outbox implementation
 
 ## Architecture Overview
 High-level architecture description of the project. Optionally, include an architectural diagram.
@@ -64,27 +65,27 @@ Feel free to add as many use cases as are relevant to demonstrate the versatilit
 This section provides an overview of the key components of the project, detailing the organization and purpose of different directories and files. This helps in navigating and understanding the project's codebase more efficiently.
 ...
 ```
-├───Common
+├───Common  (Reusable functionalities, can be exported as nuget)
 │   ├───Abstractions
-│   ├───Auth
-│   │   ├───Handlers
+│   ├───Auth (Authentication and authorization features)
+│   │   ├───Handlers (Http message handler for adding access tokens to request)
 │   │   ├───TestHelpers
-│   │   └───TokenServices
+│   │   └───TokenServices (Services for retrieving and caching access token)
 │   ├───Middleware
-│   ├───Repositories
-│   ├───ResultTypes
+│   ├───Repositories (Repositories abstractions)
+│   ├───ResultTypes (Implementation of result pattern with OneOf)
 │   ├───Swagger
-│   └───Validations
-├───VideoManagement
-│   ├───Database
+│   └───Validations (Validation pipeline behavior for mediator)
+├───VideoManagement (Service implementation)
+│   ├───Database (DB Entities configuration, DbContext, ...)
 │   ├───Features
-│   │   ├───BlobStorage
-│   │   ├───Media
-│   │   ├───Resource
-│   │   └───Videos
-│   │       ├───DomainEvents
-│   │       ├───Download
-│   │       ├───Encode
+│   │   ├───BlobStorage (Storage services)
+│   │   ├───Media (Media encoding services)
+│   │   ├───Resource (Resource signing services)
+│   │   └───Videos (Video related features)
+│   │       ├───DomainEvents (Video domain events with specific handlers)
+│   │       ├───Download (Video download related features)
+│   │       ├───Encode (Video encoding related features)
 │   │       │   ├───EncodingCompleted
 │   │       │   ├───EncodingFailed
 │   │       │   └───MediaConvertEvents
@@ -92,15 +93,15 @@ This section provides an overview of the key components of the project, detailin
 │   │       ├───Repository
 │   │       ├───Stream
 │   │       └───Upload
-│   ├───Migrations
-│   ├───Options
-│   ├───Outbox
+│   ├───Migrations (EF Core migrations)
+│   ├───Options (Option pattern used for configuration)
+│   ├───Outbox (Outbox pattern job implementation)
 │   └───Properties
-└───VideoManagement.Contracts
-    ├───Api
+└───VideoManagement.Contracts (Contracts published as nuget for other services)
+    ├───Api (Video management client)
     │   └───V1
-    └───IntegrationEvents
+    └───IntegrationEvents (Integration events published by video management)
 ```
 
 Remember to customize the directory and file names based on your actual project structure. The goal here is to provide a clear map of your project for easier navigation and understanding.
-
+## Configuration
