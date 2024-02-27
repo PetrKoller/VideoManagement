@@ -145,3 +145,5 @@ If FE Client needs to download a video, it requests the owner service of the vid
   }
 }
 ```
+## Nuget packages
+The video client nuget package is published as part of the CI/CD pipeline when a vX.Y.Z tag is specified. You can find the contract package here [Video Management Client package](https://github.com/PetrKoller/VideoManagement/pkgs/nuget/PowerTrainer.VideoManagement.Contracts)
