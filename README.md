@@ -1,7 +1,15 @@
 # Video Management - Video-On-Demand (VOD) Processing Service
-
 ## Introduction
-Brief description of the purpose and functionality of the VOD Processing Service. Include its real-world application and relevance.
+This repository serves as a reference project to demonstrate gained knowledge and skills.
+It's a picked service (and specifically adjsuted for reference project purposes) from private system called `PowerTrainer` that I develop in my free time. 
+
+Purpose of this service is to fulfill requirements that system has to manage its own video content, following requiremetns are:
+- Video conent has to be private and exclusive for the platform (not accessible by outside  world), public platform like YouTube cannot be used
+- Video content uploading and encoding for VOD formats
+- Video on demand streaming (playable anytime)
+- Video downloading
+
+This service brings in following benefits to the rest of the system:
 
 ## Technologies Used
 List all the technologies, frameworks, and tools used in this project. For example:
@@ -35,30 +43,6 @@ Feel free to add as many use cases as are relevant to demonstrate the versatilit
 ## Project Structure
 
 This section provides an overview of the key components of the project, detailing the organization and purpose of different directories and files. This helps in navigating and understanding the project's codebase more efficiently.
-
-### Root Directory
-- `src/`: Contains all the source code of the project.
-- `docs/`: Documentation files, including architectural diagrams and API docs.
-- `tests/`: Automated tests for the project, including unit and integration tests.
-- `.github/`: CI/CD pipeline configurations and other GitHub-specific files.
-
-### Source Directory (`src/`)
-- `services/`: Core service logic for VOD processing.
-- `controllers/`: REST API controllers.
-- `models/`: Data models and database schema.
-- `utils/`: Utility functions and helpers.
-
-### Tests Directory (`tests/`)
-- `unit/`: Unit tests for individual components.
-- `integration/`: Integration tests simulating real-world usage.
-
-### Documentation Directory (`docs/`)
-- `ARCHITECTURE.md`: Detailed description of the project architecture.
-- `API_DOCS.md`: API endpoints and usage instructions.
-
-### Continuous Integration and Deployment (`/.github/`)
-- `workflows/`: YAML files defining CI/CD workflows.
-
 ...
 ```
 ├───Common
@@ -94,11 +78,10 @@ This section provides an overview of the key components of the project, detailin
 │   ├───Outbox
 │   └───Properties
 └───VideoManagement.Contracts
-├───Api
-│   └───V1
-└───IntegrationEvents
+    ├───Api
+    │   └───V1
+    └───IntegrationEvents
 ```
 
 Remember to customize the directory and file names based on your actual project structure. The goal here is to provide a clear map of your project for easier navigation and understanding.
-
 
